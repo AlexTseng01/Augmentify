@@ -1,10 +1,11 @@
 # CLI Example (Full): 
-# python driver.py 
-# "C:\path\to\target" --save_path "C:\path\to\saveFGlder" --include_sub True 
-# --replace_files False --preview_img "C:\path\to\previewImg.png"
+# python augmentify_cli.py "C:\path\to\target" action --save_path "C:\path\to\saveFolder" --include_sub True --replace_files False --preview_img "C:\path\to\previewImg.png"
 
 # CLI Example 2 (Partial):
-# python driver.py C:\path\to\target --include_sub True --replace_files True
+# python augmentify_cli.py "C:\path\to\target" action --include_sub True --replace_files True
+
+# CLI Example 3 (Minimum):
+# python augmentify_cli.py "C:\path\to\target" action
 
 import argparse
 import albumentations as album
@@ -71,28 +72,45 @@ def str_to_bool(s):
         return s
     return s.lower() in ("true", "1", "yes")
 
-def main(target, save, include_sub, replace_files, preview_img):
+def main(target, action, save, include_sub, replace_files, preview_img):
     global TARGET_PATH, SAVE_PATH, INCLUDE_SUB, REPLACE_FILES, PREVIEW_IMG
     TARGET_PATH = target
     SAVE_PATH = save
     INCLUDE_SUB = include_sub
     REPLACE_FILES = replace_files
     PREVIEW_IMG = preview_img
+    # print("TARGET_PATH =",TARGET_PATH)
+    # print("SAVE_PATH =", SAVE_PATH)
+    # print("INCLUDE_SUB =", INCLUDE_SUB)
+    # print("REPLACE_FILES =", REPLACE_FILES)
+    # print("PREVIEW_IMG =", PREVIEW_IMG)
 
-    print("TARGET_PATH =",TARGET_PATH)
-    print("SAVE_PATH =", SAVE_PATH)
-    print("INCLUDE_SUB =", INCLUDE_SUB)
-    print("REPLACE_FILES =", REPLACE_FILES)
-    print("PREVIEW_IMG =", PREVIEW_IMG)
-    add_empty_labels()
+    if action == "flip_img":
+        flip_img()
+    elif action == "filter_img":
+        filter_img()
+    elif action == "rotate_img":
+        rotate_img()
+    elif action == "scale_img":
+        scale_img()
+    elif action == "shift_img":
+        shift_img()
+    elif action == "pad_img":
+        pad_img()
+    elif action == "add_empty_labels":
+        add_empty_labels()
+    else:
+        print("Error: Invalid action call.")
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Augmentify")
     parser.add_argument("target_path", help="Path to target folder")
+    parser.add_argument("action", help="Specify action to perform")
     parser.add_argument("--save_path", default=None, help="Path to save folder")
     parser.add_argument("--include_sub", type=str_to_bool, default=False, help="Include subfolders?")
     parser.add_argument("--replace_files", type=str_to_bool, default=False, help="Replace files?")
     parser.add_argument("--preview_img", default=None, help="Path to preview image")
     args = parser.parse_args()
-    main(args.target_path, args.save_path, args.include_sub, args.replace_files, args.preview_img)
+    main(args.target_path, args.action, args.save_path, args.include_sub, args.replace_files, args.preview_img)
 
